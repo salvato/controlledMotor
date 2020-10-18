@@ -265,8 +265,8 @@ MainWindow::on_buttonStart_clicked() {
         pRightPlot->ClearDataSet(3);
         nRightPlotPoints = 0;
 
-        pLMotor->setPIDmode(MANUAL);
-        pRMotor->setPIDmode(MANUAL);
+        pLMotor->setPIDmode(AUTOMATIC);
+        pRMotor->setPIDmode(AUTOMATIC);
 
         changeSpeed();
         testTimer.start(3000);
