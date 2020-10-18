@@ -367,14 +367,16 @@ void
 MainWindow::changeSpeed() {
     currentLspeed = 1.0 - currentLspeed;
     currentRspeed = 1.0 - currentRspeed;
-    emit LSpeedChanged(currentLspeed+0.7);
-    emit RSpeedChanged(currentRspeed+0.7);
+    emit LSpeedChanged(currentLspeed);
+    emit RSpeedChanged(currentRspeed);
 }
 
 
 void
 MainWindow::on_buttonOpenLoop_clicked() {
     if(pUi->buttonOpenLoop->text() == QString("Stop")) {
+        startStepTimer.stop();
+        stopStepTimer.stop();
         currentLspeed = 0.0;
         currentRspeed = 0.0;
         emit LSpeedChanged(currentLspeed);
@@ -402,7 +404,39 @@ MainWindow::on_buttonOpenLoop_clicked() {
 
         pLMotor->setPIDmode(MANUAL);
         pRMotor->setPIDmode(MANUAL);
-
+        connect(&startStepTimer, SIGNAL(timeout()),
+                 this, SLOT(onStartStep()));
         pUi->buttonOpenLoop->setText("Stop");
+        startStepTimer.start(200);
     }
+}
+
+
+void
+MainWindow::onStartStep() {
+    currentLspeed = 0.5;
+    currentRspeed = 0.5;
+    emit LSpeedChanged(currentLspeed);
+    emit RSpeedChanged(currentRspeed);
+    connect(&stopStepTimer, SIGNAL(timeout()),
+            this, SLOT(onStopStep()));
+    stopStepTimer.start(1000);
+    startStepTimer.stop();
+    disconnect(&startStepTimer, SIGNAL(timeout()),
+               this, SLOT(onStartStep()));
+}
+
+
+void
+MainWindow::onStopStep() {
+    currentLspeed = 0.0;
+    currentRspeed = 0.0;
+    emit LSpeedChanged(currentLspeed);
+    emit RSpeedChanged(currentRspeed);
+
+    stopStepTimer.stop();
+    disconnect(&stopStepTimer, SIGNAL(timeout()),
+               this, SLOT(onStopStep()));
+
+    on_buttonOpenLoop_clicked();
 }

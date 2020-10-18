@@ -64,6 +64,8 @@ private slots:
     void changeSpeed();
 
     void on_buttonOpenLoop_clicked();
+    void onStartStep();
+    void onStopStep();
 
 private:
     void CreateLeftMotorThread();
@@ -97,5 +99,7 @@ private:
     QThread*         pLeftMotorThread;
     QThread*         pRightMotorThread;
     QTimer           testTimer;
+    QTimer           startStepTimer;
+    QTimer           stopStepTimer;
 };
 
